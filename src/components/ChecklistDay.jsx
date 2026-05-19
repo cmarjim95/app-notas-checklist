@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import '../styles/ChecklistDay.css';
 
-export function ChecklistDay({ date, items, onToggle, onDelete, onAddItem }) {
+export function ChecklistDay({ date, items, onToggle, onDelete, onAddItem, onPrevDay, onNextDay }) {
   const [inputValue, setInputValue] = useState('');
   const [deadlineValue, setDeadlineValue] = useState('');
 
@@ -37,7 +37,15 @@ export function ChecklistDay({ date, items, onToggle, onDelete, onAddItem }) {
 
   return (
     <div className="checklist-day">
-      <h2 className="day-title">{formatDate(date)}</h2>
+      <div className="day-title-row">
+        <button type="button" className="day-nav-btn" onClick={onPrevDay}>
+          ←
+        </button>
+        <h2 className="day-title">{formatDate(date)}</h2>
+        <button type="button" className="day-nav-btn" onClick={onNextDay}>
+          →
+        </button>
+      </div>
 
       <div className="add-item-form">
         <input

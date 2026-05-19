@@ -3,80 +3,74 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(180deg, #eceff4 0%, #d6e4ff 100%);
+  padding: 20px;
 }
 
 .app-header {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 1);
+  padding: 26px;
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.14);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-  width: min(100%, 860px);
+  gap: 22px;
+  width: min(100%, 640px);
+  border-radius: 32px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .app-header h1 {
   margin: 0;
-  font-size: 28px;
-  color: #333;
-  flex: 1;
-  min-width: 200px;
+  font-size: 36px;
+  color: #111827;
+  text-align: center;
+  width: 100%;
 }
 
 .tab-toggle,
 .view-toggle,
 .subview-toggle {
   display: flex;
-  gap: 10px;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .tab-btn,
 .toggle-btn {
-  padding: 10px 20px;
-  border: 2px solid #ddd;
+  padding: 18px 28px;
+  border: 1px solid transparent;
   background: white;
-  color: #333;
-  border-radius: 4px;
+  color: #111827;
+  border-radius: 24px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: all 0.2s;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+  transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+  min-width: 160px;
 }
 
+.tab-btn:hover,
 .toggle-btn:hover {
-  border-color: #667eea;
+  transform: translateY(-1px);
+  border-color: #e2e8f0;
 }
 
 .toggle-btn.active,
 .tab-btn.active {
-  background: #667eea;
+  background: #2563eb;
   color: white;
-  border-color: #667eea;
-}
-
-.tab-btn {
-  padding: 10px 20px;
-  border: 2px solid #ddd;
-  background: white;
-  color: #333;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: all 0.2s;
-}
-
-.tab-btn:hover {
-  border-color: #667eea;
+  border-color: #2563eb;
+  box-shadow: 0 18px 36px rgba(37, 99, 235, 0.22);
 }
 
 .app-main {
   flex: 1;
-  padding: 24px;
-  max-width: 860px;
+  padding: 30px 18px 36px;
+  max-width: 640px;
   width: 100%;
   margin: 0 auto;
 }
@@ -89,13 +83,24 @@
 
   .app-header h1 {
     text-align: center;
+    font-size: 24px;
   }
 
-  .view-toggle {
+  .view-toggle,
+  .tab-toggle,
+  .subview-toggle {
     justify-content: center;
   }
 
+  .tab-btn,
+  .toggle-btn {
+    width: 100%;
+    min-width: unset;
+    padding: 18px 18px;
+    font-size: 18px;
+  }
+
   .app-main {
-    padding: 10px;
+    padding: 12px;
   }
 }
