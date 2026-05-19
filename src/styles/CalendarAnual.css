@@ -1,0 +1,145 @@
+.calendar-annual{
+
+  background:var(--panel);
+
+  border-radius:28px;
+
+  padding:32px;
+
+  box-shadow:var(--shadow);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 20px;
+}
+
+.calendar-header h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #333;
+  min-width: 100px;
+  text-align: center;
+}
+
+.calendar-header button {
+  padding: 10px 15px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.calendar-header button:hover {
+  background: #1976D2;
+}
+
+.months-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.month-card{
+
+  background:var(--paper);
+
+  border:none;
+
+  border-radius:20px;
+
+  box-shadow:var(--shadow);
+}
+
+.month-card h3 {
+  margin: 0 0 15px 0;
+  text-align: center;
+  color: #333;
+  font-size: 16px;
+  text-transform: capitalize;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.weekday-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: bold;
+  color: #666;
+  padding: 5px 0;
+  text-transform: uppercase;
+}
+
+.day-empty {
+  aspect-ratio: 1;
+  background: transparent;
+}
+
+.day-cell{
+
+  border:none;
+
+  background:#fffdf8;
+
+  border-radius:12px;
+}
+
+.day-cell:hover {
+  background: #f0f0f0;
+  border-color: #999;
+}
+
+.day-cell.today{
+
+  background:#ead7bf;
+
+  border:2px solid #8a5a44;
+}
+
+.day-cell.selected{
+
+  background:#caa483;
+
+  color:white;
+
+  border:2px solid #8a5a44;
+}
+
+.day-number {
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.completion-indicator {
+  font-size: 9px;
+  color: white;
+  font-weight: bold;
+  padding: 1px 3px;
+  border-radius: 2px;
+  min-width: 25px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .months-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+  }
+
+  .day-cell {
+    font-size: 11px;
+  }
+}
