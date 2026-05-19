@@ -1,0 +1,136 @@
+.calendar-annual{
+  background:var(--panel);
+  border-radius:32px;
+  padding:28px;
+  box-shadow:var(--shadow);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  gap: 16px;
+}
+
+.calendar-header h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #333;
+  min-width: 100px;
+  text-align: center;
+}
+
+.calendar-header button {
+  padding: 14px 20px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.15s ease;
+}
+
+.calendar-header button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.calendar-header button:hover {
+  background: #1976D2;
+}
+
+.months-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.month-card{
+  background:var(--paper);
+  border:none;
+  border-radius:24px;
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+
+.month-card h3 {
+  margin: 0 0 18px 0;
+  text-align: center;
+  color: #111827;
+  font-size: 18px;
+  text-transform: capitalize;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.weekday-header {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #475569;
+  padding: 8px 0;
+  text-transform: uppercase;
+}
+
+.day-empty {
+  aspect-ratio: 1;
+  background: transparent;
+}
+
+.day-cell{
+  border:none;
+  background:#fffdf8;
+  border-radius:16px;
+  padding: 6px 0;
+}
+
+.day-cell:hover {
+  background: #f0f0f0;
+}
+
+.day-cell.today{
+  background:#ead7bf;
+  border:2px solid #8a5a44;
+}
+
+.day-cell.selected{
+  background:#caa483;
+  color:white;
+  border:2px solid #8a5a44;
+}
+
+.day-number {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.completion-indicator {
+  font-size: 10px;
+  color: white;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 4px;
+  min-width: 30px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .months-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+  }
+
+  .day-cell {
+    font-size: 11px;
+  }
+}
