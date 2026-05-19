@@ -28,6 +28,7 @@ export function Pizarra() {
   const [saveMessage, setSaveMessage] = useState('');
   const [selectedDate, setSelectedDate] = useState(getTodayString());
   const [snapshotsByDate, setSnapshotsByDate] = useState({});
+  const [previewSnapshotId, setPreviewSnapshotId] = useState(null);
 
   const setupCanvas = (canvas) => {
     const dpr = window.devicePixelRatio || 1;
@@ -155,6 +156,36 @@ export function Pizarra() {
     setSaveMessage('Captura guardada en Hoy');
   };
 
+  const handleDeleteSnapshot = (snapshotId) => {
+    const updated = { ...snapshotsByDate };
+    const dateSnapshots = (updated[selectedDate] || []).filter(
+      (snapshot) => snapshot.id !== snapshotId
+    );
+
+    if (dateSnapshots.length > 0) {
+      updated[selectedDate] = dateSnapshots;
+    } else {
+      delete updated[selectedDate];
+    }
+
+    setSnapshotsByDate(updated);
+    saveSnapshotsToStorage(updated);
+    setPreviewSnapshotId(null);
+
+    if (!updated[selectedDate]) {
+      const remainingDates = Object.keys(updated).sort((a, b) => b.localeCompare(a));
+      setSelectedDate(remainingDates[0] || getTodayString());
+    }
+  };
+
+  const startPreview = (snapshotId) => {
+    setPreviewSnapshotId(snapshotId);
+  };
+
+  const stopPreview = () => {
+    setPreviewSnapshotId(null);
+  };
+
   const changeSelectedDate = (offset) => {
     const current = new Date(`${selectedDate}T00:00:00`);
     current.setDate(current.getDate() + offset);
@@ -242,13 +273,48 @@ export function Pizarra() {
           <div className="saved-gallery">
             {snapshots.map((snapshot) => (
               <div key={snapshot.id} className="saved-card">
-                <img src={snapshot.image} alt="Captura de pizarra" />
-                <span>{new Date(snapshot.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                <div className="saved-card-image-wrap">
+                  <img src={snapshot.image} alt="Captura de pizarra" />
+                  <div className="saved-card-actions">
+                    <button
+                      type="button"
+                      className="icon-btn view-btn"
+                      onPointerDown={() => startPreview(snapshot.id)}
+                      onPointerUp={stopPreview}
+                      onPointerLeave={stopPreview}
+                      onPointerCancel={stopPreview}
+                      aria-label="Ver captura ampliada"
+                    >
+                      👁
+                    </button>
+                    <button
+                      type="button"
+                      className="icon-btn delete-btn"
+                      onClick={() => handleDeleteSnapshot(snapshot.id)}
+                      aria-label="Eliminar captura"
+                    >
+                      🗑
+                    </button>
+                  </div>
+                </div>
+                <div className="saved-card-footer">
+                  <span>{new Date(snapshot.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
+      {previewSnapshotId && (
+        <div className="preview-overlay" onClick={stopPreview}>
+          <div className="preview-box" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={snapshots.find((snapshot) => snapshot.id === previewSnapshotId)?.image}
+              alt="Vista ampliada de captura"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
