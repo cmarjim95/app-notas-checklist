@@ -1,8 +1,21 @@
-import { useState } from "react";
+import "./App.css";
+import { useState, useEffect } from "react";
 
 function App() {
   const [texto, setTexto] = useState("");
-  const [tareas, setTareas] = useState([]);
+  const [tareas, setTareas] = useState(() => {
+    const tareasGuardadas = localStorage.getItem("tareas");
+
+    if (tareasGuardadas) {
+      return JSON.parse(tareasGuardadas);
+    }
+
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("tareas", JSON.stringify(tareas));
+  }, [tareas]);
 
   function agregarTarea() {
     if (texto.trim() === "") {
@@ -34,6 +47,14 @@ function App() {
     setTareas(nuevasTareas);
   }
 
+  function borrarTarea(id) {
+    const nuevasTareas = tareas.filter((tarea) => {
+      return tarea.id !== id;
+    });
+
+    setTareas(nuevasTareas);
+  }
+
   return (
     <main>
       <h1>App Notas Checklist</h1>
@@ -43,15 +64,27 @@ function App() {
         placeholder="Escribe una tarea"
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            agregarTarea();
+          }
+        }}
       />
 
       <button onClick={agregarTarea}>Añadir</button>
 
       <ul>
         {tareas.map((tarea) => (
-          <li key={tarea.id} onClick={() => cambiarEstado(tarea.id)}>
-            {tarea.completada ? "☑ " : "□ "}
-            {tarea.texto}
+          <li key={tarea.id}>
+            <span
+              className={tarea.completada ? "completada" : ""}
+              onClick={() => cambiarEstado(tarea.id)}
+            >
+              {tarea.completada ? "☑ " : "□ "}
+              {tarea.texto}
+            </span>
+
+            <button onClick={() => borrarTarea(tarea.id)}>🗑</button>
           </li>
         ))}
       </ul>
