@@ -67,6 +67,9 @@ li {
     opacity: 0.6;
 }
 
+.titulo-mes {
+    transition: all 0.3s ease;
+}
 
 .cabecera-mes {
     display: flex;
@@ -75,11 +78,32 @@ li {
     gap: 15px;
 }
 
+.cabecera-mes button {
+    transition: all 0.2s ease;
+}
+
+.cabecera-mes button:hover {
+    transform: scale(1.08);
+}
+
+.cabecera-mes button:active {
+    transform: scale(0.95);
+}
+
 .dias {
     display: flex;
     justify-content: center;
     gap: 10px;
     margin: 20px 0;
+
+    cursor: grab;
+    user-select: none;
+
+    transition: all 0.25s ease;
+}
+
+.dias button:hover {
+    transform: translateY(-2px);
 }
 
 .dias button {
@@ -91,7 +115,13 @@ li {
 
     min-width: 60px;
     padding: 10px;
+    transition: all 0.25s ease;
 }
+
+.dias button:active {
+    transform: scale(0.95);
+}
+
 
 .dia-semana {
     font-size: 0.8rem;
@@ -118,6 +148,10 @@ li {
 
 .dia-activo {
     border: 2px solid #8fbc8f;
+
+    transform: scale(1.08);
+
+    transition: all 0.25s ease;
 }
 
 .check {
@@ -226,4 +260,144 @@ li button {
 
 li button:hover {
     background: rgba(166, 124, 82, 0.1);
+}
+
+.contenido-tarea {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+
+.fecha-limite:hover {
+    text-decoration: underline;
+}
+
+.zona-fecha {
+    margin-top: 4px;
+}
+
+.datos-tarea {
+    margin-top: 4px;
+}
+
+.fecha-creacion,
+.fecha-limite {
+    font-size: 0.8rem;
+    color: #8a8a8a;
+    margin-top: 4px;
+}
+
+.contenido-tarea {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-left: 10px;
+}
+
+.boton-flotante {
+    position: fixed;
+
+    right: 25px;
+    bottom: 25px;
+
+    width: 65px;
+    height: 65px;
+
+    border-radius: 50%;
+
+    font-size: 2rem;
+
+    background: #c8a97e;
+
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+
+    z-index: 999;
+}
+
+.boton-flotante:hover {
+    transform: scale(1.1);
+}
+
+.modal {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0, 0, 0, 0.4);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1000;
+}
+
+.modal-contenido {
+    background: white;
+
+    width: 90%;
+    max-width: 400px;
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+
+    animation: aparecerModal 0.2s ease;
+}
+
+.modal-contenido h3 {
+    margin: 0;
+    text-align: center;
+    color: #4b3f35;
+}
+
+.modal-botones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.selector-fecha {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.selector-fecha label {
+    font-size: 0.9rem;
+    color: #4b3f35;
+}
+
+.quitar-fecha {
+    background: transparent;
+    color: #a66;
+    border: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+
+@keyframes aparecerModal {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
