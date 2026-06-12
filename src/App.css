@@ -1,6 +1,14 @@
 /* --------------------------------------------------
    Base global
 -------------------------------------------------- */
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
 body {
     background-color: #f5f1ea;
     font-family: Arial, sans-serif;
@@ -8,8 +16,12 @@ body {
 
 main {
     max-width: 700px;
-    margin: 40px auto;
+    margin: 0 auto;
     padding: 20px;
+
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 h1 {
@@ -68,6 +80,13 @@ li {
     transition: all 0.3s ease;
 }
 
+.cabecera-mes,
+.dias,
+.boton-flotante {
+    position: sticky;
+    z-index: 10;
+}
+
 .cabecera-mes {
     display: flex;
     justify-content: center;
@@ -95,7 +114,6 @@ li {
     justify-content: center;
     gap: 10px;
     margin: 20px 0;
-    cursor: grab;
     user-select: none;
     transition: all 0.25s ease;
 }
@@ -155,11 +173,35 @@ li {
     margin-bottom: 10px;
     background: #f7f3ee;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.15s ease;
+    transition: transform 0.25s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+    cursor: grab;
+    user-select: none;
+    will-change: transform;
 }
 
 .tarea:hover {
     transform: translateY(-1px);
+}
+
+.tarea:active {
+    cursor: grabbing;
+    opacity: 0.6;
+}
+
+.tarea.dragging {
+    opacity: 0.4;
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.tarea.drag-over {
+    background: #e0d4c6;
+    border: 2px solid #c8a97e;
+    transform: scale(1.02);
+}
+
+.tarea.drop-target {
+    transform: translateY(4px);
 }
 
 .check {
@@ -169,7 +211,7 @@ li {
     width: 34px;
     height: 34px;
     flex-shrink: 0;
-    cursor: pointer;
+    cursor: grab;
 }
 
 .check-icon {
@@ -205,7 +247,7 @@ li {
 
 .texto {
     flex: 1;
-    cursor: pointer;
+    cursor: grab;
     font-size: 1rem;
     color: #3f3a35;
 }
@@ -221,7 +263,11 @@ li {
 }
 
 span {
-    cursor: pointer;
+    cursor: grab;
+}
+
+.tarea span {
+    cursor: grab;
 }
 
 li button {
@@ -340,6 +386,12 @@ li button:hover {
     margin: 0;
     text-align: left;
     cursor: pointer;
+}
+
+.zona-scroll {
+    max-height: calc(100vh - 260px);
+    overflow-y: auto;
+    padding-bottom: 80px;
 }
 
 /* --------------------------------------------------

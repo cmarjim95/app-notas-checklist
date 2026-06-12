@@ -20,6 +20,8 @@ function App() {
   const [fechaLimite, setFechaLimite] = useState("");
   const [inicioX, setInicioX] = useState(0);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   const [tareas, setTareas] = useState(() => {
     const tareasGuardadas = localStorage.getItem("tareas");
@@ -110,6 +112,7 @@ function App() {
       fecha: fechaSeleccionada,
       fechaCreacion: formatearFecha(new Date()),
       fechaLimite: fechaLimite || null,
+      orden: tareas.length, // 👈 IMPORTANTE
     };
 
     setTareas([...tareas, nuevaTarea]);
@@ -175,6 +178,22 @@ function App() {
     setTareas(nuevasTareas);
   }
 
+  function moverTarea(indexDestino) {
+    if (draggedIndex === null || draggedIndex === indexDestino) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    const lista = [...tareas];
+    const [tareaMovida] = lista.splice(draggedIndex, 1);
+    lista.splice(indexDestino, 0, tareaMovida);
+
+    setTareas(lista);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  }
+
   // ---------------------------------------------------
   // Navegación de calendario
   // ---------------------------------------------------
@@ -221,14 +240,13 @@ function App() {
   // ---------------------------------------------------
   // Datos derivados
   // ---------------------------------------------------
-  const tareasDelDia = tareas.filter((tarea) => {
+  const tareasOrdenadas = [...tareas].sort((a, b) => a.orden - b.orden);
+  const tareasDelDia = tareasOrdenadas.filter((tarea) => {
     if (tarea.completada) {
       return tarea.fecha === fechaSeleccionada;
     }
-
     return tarea.fecha <= fechaSeleccionada;
   });
-
   // ---------------------------------------------------
   // Render
   // ---------------------------------------------------
@@ -296,36 +314,55 @@ function App() {
           );
         })}
       </div>
-
-      <ul>
-        {tareasDelDia.map((tarea) => (
-          <li key={tarea.id} className="tarea">
-            <span className="check" onClick={() => cambiarEstado(tarea.id)}>
-              <span className={tarea.completada ? "circle done" : "circle"} />
-            </span>
-
-            <div className="contenido-tarea">
-              <span className={tarea.completada ? "texto done" : "texto"}>
-                {tarea.texto}
+      <div className="zona-scroll">
+        <ul>
+          {tareasDelDia.map((tarea, index) => (
+            <li
+              key={tarea.id}
+              className={`tarea ${draggedIndex === index ? "dragging" : ""} ${dragOverIndex === index ? "drag-over" : ""}`}
+              draggable
+              onDragStart={(e) => {
+                setDraggedIndex(index);
+                e.dataTransfer.effectAllowed = "move";
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                setDragOverIndex(index);
+              }}
+              onDragLeave={() => setDragOverIndex(null)}
+              onDrop={() => moverTarea(index)}
+              onDragEnd={() => {
+                setDraggedIndex(null);
+                setDragOverIndex(null);
+              }}
+            >
+              <span className="check" onClick={() => cambiarEstado(tarea.id)}>
+                <span className={tarea.completada ? "circle done" : "circle"} />
               </span>
 
-              <span className="fecha-creacion">
-                Creada: {tarea.fechaCreacion || "Desconocida"}
-              </span>
-
-              {tarea.fechaLimite && (
-                <span className="fecha-limite">
-                  📅 {new Date(tarea.fechaLimite).toLocaleDateString("es-ES")}
+              <div className="contenido-tarea">
+                <span className={tarea.completada ? "texto done" : "texto"}>
+                  {tarea.texto}
                 </span>
-              )}
-            </div>
 
-            <button onClick={() => editarTarea(tarea.id)}>✏️</button>
-            <button onClick={() => borrarTarea(tarea.id)}>🗑</button>
-          </li>
-        ))}
-      </ul>
+                <span className="fecha-creacion">
+                  Creada: {tarea.fechaCreacion || "Desconocida"}
+                </span>
 
+                {tarea.fechaLimite && (
+                  <span className="fecha-limite">
+                    📅 {new Date(tarea.fechaLimite).toLocaleDateString("es-ES")}
+                  </span>
+                )}
+              </div>
+
+              <button onClick={() => editarTarea(tarea.id)}>✏️</button>
+              <button onClick={() => borrarTarea(tarea.id)}>🗑</button>
+            </li>
+          ))}
+        </ul>
+      </div>
       <button
         className="boton-flotante"
         onClick={() => setMostrarFormulario(true)}
