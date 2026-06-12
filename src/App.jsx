@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
+  // ---------------------------------------------------
+  // Helpers / utilidades
+  // ---------------------------------------------------
   function formatearFecha(fecha) {
     const año = fecha.getFullYear();
     const mes = String(fecha.getMonth() + 1).padStart(2, "0");
@@ -10,6 +13,9 @@ function App() {
     return `${año}-${mes}-${dia}`;
   }
 
+  // ---------------------------------------------------
+  // Estado local
+  // ---------------------------------------------------
   const [texto, setTexto] = useState("");
   const [fechaLimite, setFechaLimite] = useState("");
   const [inicioX, setInicioX] = useState(0);
@@ -31,6 +37,9 @@ function App() {
 
   const [fechaActual, setFechaActual] = useState(new Date());
 
+  // ---------------------------------------------------
+  // Constantes de calendario
+  // ---------------------------------------------------
   const meses = [
     "Enero",
     "Febrero",
@@ -45,13 +54,12 @@ function App() {
     "Noviembre",
     "Diciembre",
   ];
+
   const diasSemana = ["D", "L", "M", "X", "J", "V", "S"];
 
   const año = fechaActual.getFullYear();
   const mes = fechaActual.getMonth();
-
   const diasMes = [];
-
   const ultimoDia = new Date(año, mes + 1, 0).getDate();
 
   for (let dia = 1; dia <= ultimoDia; dia++) {
@@ -64,9 +72,11 @@ function App() {
 
   const inicio = Math.max(0, indiceActual - 2);
   const fin = Math.min(diasMes.length, inicio + 5);
-
   const diasVisibles = diasMes.slice(inicio, fin);
 
+  // ---------------------------------------------------
+  // Efectos secundarios
+  // ---------------------------------------------------
   useEffect(() => {
     localStorage.setItem("tareas", JSON.stringify(tareas));
   }, [tareas]);
@@ -85,6 +95,9 @@ function App() {
     };
   }, []);
 
+  // ---------------------------------------------------
+  // Acciones de tareas
+  // ---------------------------------------------------
   function agregarTarea() {
     if (texto.trim() === "") {
       return;
@@ -100,7 +113,6 @@ function App() {
     };
 
     setTareas([...tareas, nuevaTarea]);
-
     setTexto("");
     setFechaLimite("");
     setMostrarFormulario(false);
@@ -122,10 +134,7 @@ function App() {
   }
 
   function borrarTarea(id) {
-    const nuevasTareas = tareas.filter((tarea) => {
-      return tarea.id !== id;
-    });
-
+    const nuevasTareas = tareas.filter((tarea) => tarea.id !== id);
     setTareas(nuevasTareas);
   }
 
@@ -145,10 +154,7 @@ function App() {
   }
 
   function editarTarea(id) {
-    const tareaActual = tareas.find((tarea) => {
-      return tarea.id === id;
-    });
-
+    const tareaActual = tareas.find((tarea) => tarea.id === id);
     const nuevoTexto = prompt("Editar tarea", tareaActual.texto);
 
     if (nuevoTexto === null || nuevoTexto.trim() === "") {
@@ -169,18 +175,16 @@ function App() {
     setTareas(nuevasTareas);
   }
 
+  // ---------------------------------------------------
+  // Navegación de calendario
+  // ---------------------------------------------------
   function mesAnterior() {
     const diaActual = new Date(fechaSeleccionada).getDate();
-
     const nuevaFechaBase = new Date(año, mes - 1, 1);
-
     const nuevoAño = nuevaFechaBase.getFullYear();
     const nuevoMes = nuevaFechaBase.getMonth();
-
     const ultimoDiaNuevoMes = new Date(nuevoAño, nuevoMes + 1, 0).getDate();
-
     const diaFinal = Math.min(diaActual, ultimoDiaNuevoMes);
-
     const nuevaFecha = new Date(nuevoAño, nuevoMes, diaFinal);
 
     setFechaActual(nuevaFecha);
@@ -189,16 +193,11 @@ function App() {
 
   function mesSiguiente() {
     const diaActual = new Date(fechaSeleccionada).getDate();
-
     const nuevaFechaBase = new Date(año, mes + 1, 1);
-
     const nuevoAño = nuevaFechaBase.getFullYear();
     const nuevoMes = nuevaFechaBase.getMonth();
-
     const ultimoDiaNuevoMes = new Date(nuevoAño, nuevoMes + 1, 0).getDate();
-
     const diaFinal = Math.min(diaActual, ultimoDiaNuevoMes);
-
     const nuevaFecha = new Date(nuevoAño, nuevoMes, diaFinal);
 
     setFechaActual(nuevaFecha);
@@ -207,22 +206,21 @@ function App() {
 
   function siguienteDia() {
     const fecha = new Date(fechaSeleccionada);
-
     fecha.setDate(fecha.getDate() + 1);
-
     setFechaSeleccionada(formatearFecha(fecha));
     setFechaActual(fecha);
   }
 
   function diaAnterior() {
     const fecha = new Date(fechaSeleccionada);
-
     fecha.setDate(fecha.getDate() - 1);
-
     setFechaSeleccionada(formatearFecha(fecha));
     setFechaActual(fecha);
   }
 
+  // ---------------------------------------------------
+  // Datos derivados
+  // ---------------------------------------------------
   const tareasDelDia = tareas.filter((tarea) => {
     if (tarea.completada) {
       return tarea.fecha === fechaSeleccionada;
@@ -231,6 +229,9 @@ function App() {
     return tarea.fecha <= fechaSeleccionada;
   });
 
+  // ---------------------------------------------------
+  // Render
+  // ---------------------------------------------------
   return (
     <main>
       <h1>App Notas Checklist</h1>
@@ -278,10 +279,9 @@ function App() {
       >
         {diasVisibles.map((fecha) => {
           const fechaTexto = formatearFecha(fecha);
-
-          const tieneTareas = tareas.some((tarea) => {
-            return tarea.fecha === fechaTexto;
-          });
+          const tieneTareas = tareas.some(
+            (tarea) => tarea.fecha === fechaTexto,
+          );
 
           return (
             <button
@@ -290,9 +290,7 @@ function App() {
               onClick={() => setFechaSeleccionada(fechaTexto)}
             >
               <span className="dia-semana">{diasSemana[fecha.getDay()]}</span>
-
               <span className="dia-numero">{fecha.getDate()}</span>
-
               {tieneTareas && <span className="indicador-dia"></span>}
             </button>
           );
@@ -327,12 +325,14 @@ function App() {
           </li>
         ))}
       </ul>
+
       <button
         className="boton-flotante"
         onClick={() => setMostrarFormulario(true)}
       >
         +
       </button>
+
       {mostrarFormulario && (
         <div className="modal" onClick={() => setMostrarFormulario(false)}>
           <div className="modal-contenido" onClick={(e) => e.stopPropagation()}>

@@ -1,3 +1,6 @@
+/* --------------------------------------------------
+   Base global
+-------------------------------------------------- */
 body {
     background-color: #f5f1ea;
     font-family: Arial, sans-serif;
@@ -15,6 +18,9 @@ h1 {
     color: #4b3f35;
 }
 
+/* --------------------------------------------------
+   Formularios y botones básicos
+-------------------------------------------------- */
 input {
     width: 70%;
     padding: 12px;
@@ -25,9 +31,6 @@ input {
 
 button {
     cursor: pointer;
-}
-
-button {
     padding: 12px 16px;
     border: none;
     border-radius: 10px;
@@ -51,22 +54,16 @@ li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     background: white;
     margin-bottom: 12px;
     padding: 15px;
-
     border-radius: 12px;
-
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-
-.completada {
-    text-decoration: line-through;
-    opacity: 0.6;
-}
-
+/* --------------------------------------------------
+   Cabecera del calendario
+-------------------------------------------------- */
 .titulo-mes {
     transition: all 0.3s ease;
 }
@@ -90,15 +87,26 @@ li {
     transform: scale(0.95);
 }
 
+/* --------------------------------------------------
+   Selector de días
+-------------------------------------------------- */
 .dias {
     display: flex;
     justify-content: center;
     gap: 10px;
     margin: 20px 0;
-
     cursor: grab;
     user-select: none;
+    transition: all 0.25s ease;
+}
 
+.dias button {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+    padding: 10px;
     transition: all 0.25s ease;
 }
 
@@ -106,22 +114,9 @@ li {
     transform: translateY(-2px);
 }
 
-.dias button {
-    position: relative;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    min-width: 60px;
-    padding: 10px;
-    transition: all 0.25s ease;
-}
-
 .dias button:active {
     transform: scale(0.95);
 }
-
 
 .dia-semana {
     font-size: 0.8rem;
@@ -134,36 +129,46 @@ li {
 
 .indicador-dia {
     position: absolute;
-
     top: 6px;
     right: 6px;
-
     width: 8px;
     height: 8px;
-
     border-radius: 50%;
-
     background-color: red;
 }
 
 .dia-activo {
     border: 2px solid #8fbc8f;
-
     transform: scale(1.08);
-
     transition: all 0.25s ease;
+}
+
+/* --------------------------------------------------
+   Tarea y estado de completado
+-------------------------------------------------- */
+.tarea {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    background: #f7f3ee;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.15s ease;
+}
+
+.tarea:hover {
+    transform: translateY(-1px);
 }
 
 .check {
     display: flex;
     align-items: center;
     justify-content: center;
-
     width: 34px;
     height: 34px;
-
     flex-shrink: 0;
-
     cursor: pointer;
 }
 
@@ -179,24 +184,17 @@ li {
 .circle {
     width: 18px;
     height: 18px;
-
     border-radius: 50%;
-
     border: 2px solid #8b8b8b;
-
     background-color: transparent;
-
     box-sizing: border-box;
-
     transition: all 0.2s ease;
-
     display: block;
 }
 
 .circle.done {
     background-color: #7fbf7f;
     border-color: #7fbf7f;
-
     transform: scale(1.05);
 }
 
@@ -205,39 +203,11 @@ li {
     border-color: #6f6f6f;
 }
 
-.tarea {
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 12px 14px;
-
-    border-radius: 14px;
-
-    margin-bottom: 10px;
-
-    background: #f7f3ee;
-
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-
-    transition: transform 0.15s ease;
-}
-
-.tarea:hover {
-    transform: translateY(-1px);
-}
-
 .texto {
     flex: 1;
     cursor: pointer;
     font-size: 1rem;
-
     color: #3f3a35;
-}
-
-span {
-    cursor: pointer;
 }
 
 .done {
@@ -245,16 +215,21 @@ span {
     opacity: 0.5;
 }
 
+.completada {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+span {
+    cursor: pointer;
+}
+
 li button {
     background: transparent;
     color: #a67c52;
-
     font-size: 16px;
-
     padding: 6px;
-
     margin-left: 0;
-
     border-radius: 8px;
 }
 
@@ -266,19 +241,7 @@ li button:hover {
     display: flex;
     flex-direction: column;
     flex: 1;
-}
-
-
-.fecha-limite:hover {
-    text-decoration: underline;
-}
-
-.zona-fecha {
-    margin-top: 4px;
-}
-
-.datos-tarea {
-    margin-top: 4px;
+    margin-left: 10px;
 }
 
 .fecha-creacion,
@@ -288,30 +251,28 @@ li button:hover {
     margin-top: 4px;
 }
 
-.contenido-tarea {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    margin-left: 10px;
+.fecha-limite:hover {
+    text-decoration: underline;
 }
 
+.zona-fecha,
+.datos-tarea {
+    margin-top: 4px;
+}
+
+/* --------------------------------------------------
+   Botón flotante
+-------------------------------------------------- */
 .boton-flotante {
     position: fixed;
-
     right: 25px;
     bottom: 25px;
-
     width: 65px;
     height: 65px;
-
     border-radius: 50%;
-
     font-size: 2rem;
-
     background: #c8a97e;
-
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-
     z-index: 999;
 }
 
@@ -319,40 +280,32 @@ li button:hover {
     transform: scale(1.1);
 }
 
+/* --------------------------------------------------
+   Modal de nueva tarea
+-------------------------------------------------- */
 .modal {
     position: fixed;
-
     top: 0;
     left: 0;
-
     width: 100%;
     height: 100%;
-
     background: rgba(0, 0, 0, 0.4);
-
     display: flex;
     justify-content: center;
     align-items: center;
-
     z-index: 1000;
 }
 
 .modal-contenido {
     background: white;
-
     width: 90%;
     max-width: 400px;
-
     padding: 25px;
-
     border-radius: 20px;
-
     display: flex;
     flex-direction: column;
     gap: 15px;
-
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-
     animation: aparecerModal 0.2s ease;
 }
 
@@ -389,7 +342,9 @@ li button:hover {
     cursor: pointer;
 }
 
-
+/* --------------------------------------------------
+   Animaciones
+-------------------------------------------------- */
 @keyframes aparecerModal {
     from {
         opacity: 0;
