@@ -185,11 +185,31 @@ function App() {
       return;
     }
 
-    const lista = [...tareas];
-    const [tareaMovida] = lista.splice(draggedIndex, 1);
-    lista.splice(indexDestino, 0, tareaMovida);
+    // draggedIndex and indexDestino are índices dentro de tareasDelDia
+    const tareaOrigen = tareasDelDia[draggedIndex];
+    const tareaDestino = tareasDelDia[indexDestino];
 
-    setTareas(lista);
+    const idxFrom = tareas.findIndex(
+      (t) => t.id === (tareaOrigen ? tareaOrigen.id : null),
+    );
+    const idxTo = tareas.findIndex(
+      (t) => t.id === (tareaDestino ? tareaDestino.id : null),
+    );
+
+    if (idxFrom === -1 || idxTo === -1) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    const lista = [...tareas];
+    const [item] = lista.splice(idxFrom, 1);
+    lista.splice(idxTo, 0, item);
+
+    // actualizar orden para que la vista respete la nueva posición
+    const listaConOrden = lista.map((t, i) => ({ ...t, orden: i }));
+
+    setTareas(listaConOrden);
     setDraggedIndex(null);
     setDragOverIndex(null);
   }
@@ -252,7 +272,7 @@ function App() {
   // ---------------------------------------------------
   return (
     <main>
-      <h1>App Notas Checklist</h1>
+      <h1>Mis tareas</h1>
 
       <div className="cabecera-mes">
         <button onClick={mesAnterior}>◀</button>
@@ -319,10 +339,13 @@ function App() {
           {tareasDelDia.map((tarea, index) => (
             <li
               key={tarea.id}
-              className={`tarea ${draggedIndex === index ? "dragging" : ""} ${dragOverIndex === index ? "drag-over" : ""}`}
+              className={`tarea ${tarea.completada ? "completada" : ""} ${draggedIndex === index ? "dragging" : ""} ${dragOverIndex === index ? "drag-over" : ""}`}
               draggable
               onDragStart={(e) => {
                 setDraggedIndex(index);
+                try {
+                  e.dataTransfer.setData("text/plain", String(tarea.id));
+                } catch (err) {}
                 e.dataTransfer.effectAllowed = "move";
               }}
               onDragOver={(e) => {
@@ -341,7 +364,10 @@ function App() {
                 <span className={tarea.completada ? "circle done" : "circle"} />
               </span>
 
-              <div className="contenido-tarea">
+              <div
+                className="contenido-tarea"
+                onClick={() => cambiarEstado(tarea.id)}
+              >
                 <span className={tarea.completada ? "texto done" : "texto"}>
                   {tarea.texto}
                 </span>
