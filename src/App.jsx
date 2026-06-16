@@ -1,6 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
 import "./TailwindApp.css";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 function App() {
   // ---------------------------------------------------
@@ -23,6 +32,11 @@ function App() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
+  const diasRef = useRef(null);
+  const [isDraggingDias, setIsDraggingDias] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const [tareas, setTareas] = useState(() => {
     const tareasGuardadas = localStorage.getItem("tareas");
@@ -69,14 +83,6 @@ function App() {
     diasMes.push(new Date(año, mes, dia));
   }
 
-  const indiceActual = diasMes.findIndex((fecha) => {
-    return formatearFecha(fecha) === fechaSeleccionada;
-  });
-
-  const inicio = Math.max(0, indiceActual - 2);
-  const fin = Math.min(diasMes.length, inicio + 5);
-  const diasVisibles = diasMes.slice(inicio, fin);
-
   // ---------------------------------------------------
   // Efectos secundarios
   // ---------------------------------------------------
@@ -97,6 +103,22 @@ function App() {
       window.removeEventListener("keydown", cerrarConEscape);
     };
   }, []);
+
+  useEffect(() => {
+    const contenedor = diasRef.current;
+
+    if (!contenedor) return;
+
+    const activo = contenedor.querySelector(".dia-activo");
+
+    if (!activo) return;
+
+    activo.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [fechaSeleccionada]);
 
   // ---------------------------------------------------
   // Acciones de tareas
@@ -258,6 +280,37 @@ function App() {
     setFechaActual(fecha);
   }
 
+  function seleccionarFecha(fechaTexto) {
+    setFechaSeleccionada(fechaTexto);
+    setFechaActual(new Date(fechaTexto));
+    setMostrarCalendario(false);
+  }
+
+  // Funciones para arrastrar el calendario de días
+  function iniciarArrastre(e) {
+    if (!diasRef.current) return;
+
+    setIsDraggingDias(true);
+
+    setStartX(e.pageX - diasRef.current.offsetLeft);
+    setScrollLeft(diasRef.current.scrollLeft);
+  }
+
+  function moverArrastre(e) {
+    if (!isDraggingDias || !diasRef.current) return;
+
+    e.preventDefault();
+
+    const x = e.pageX - diasRef.current.offsetLeft;
+    const distancia = (x - startX) * 1.5;
+
+    diasRef.current.scrollLeft = scrollLeft - distancia;
+  }
+
+  function terminarArrastre() {
+    setIsDraggingDias(false);
+  }
+
   // ---------------------------------------------------
   // Datos derivados
   // ---------------------------------------------------
@@ -277,58 +330,102 @@ function App() {
         Mis tareas
       </h1>
 
-      <div className="cabecera-mes mb-4 rounded-3xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur-sm">
-        <button
-          className="rounded-full bg-teal-200 px-4 py-2 text-slate-700 transition hover:scale-105 hover:bg-teal-300"
-          onClick={mesAnterior}
-        >
-          ◀
-        </button>
+      <div className="cabecera-mes relative mb-4 flex items-center justify-center rounded-3xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur-sm">
+        {" "}
+        <div className="flex items-center gap-4">
+          <button
+            className="rounded-full bg-teal-200 p-3 text-slate-700 transition hover:scale-105 hover:bg-teal-300"
+            onClick={mesAnterior}
+          >
+            <ChevronLeft size={20} />
+          </button>
 
-        <h2 className="titulo-mes text-xl font-semibold text-slate-700">
-          {meses[mes]} {año}
-        </h2>
+          <h2 className="titulo-mes min-w-[170px] text-center text-xl font-semibold text-slate-700">
+            {meses[mes]} {año}
+          </h2>
 
+          <button
+            className="rounded-full bg-teal-200 p-3 text-slate-700 transition hover:scale-105 hover:bg-teal-300"
+            onClick={mesSiguiente}
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
         <button
-          className="rounded-full bg-teal-200 px-4 py-2 text-slate-700 transition hover:scale-105 hover:bg-teal-300"
-          onClick={mesSiguiente}
+          onClick={() => setMostrarCalendario(!mostrarCalendario)}
+          className="
+  absolute right-5 top-1/2
+  -translate-y-1/2
+
+  flex h-11 w-11 items-center justify-center
+
+  rounded-full bg-slate-100
+  text-slate-600 shadow-sm
+
+  transition-all duration-200
+  hover:scale-105 hover:bg-sky-100
+  hover:text-teal-600
+  active:scale-95
+"
+          aria-label="Abrir calendario"
         >
-          ▶
+          <CalendarDays size={20} />
         </button>
+      </div>
+      <div
+        className={`
+    transition-all duration-300 ease-out
+
+    ${
+      mostrarCalendario
+        ? "max-h-24 opacity-100 mb-4 translate-y-0"
+        : "max-h-0 opacity-0 -translate-y-2"
+    }
+  `}
+      >
+        <div className="flex justify-center pt-2">
+          <input
+            type="date"
+            value={fechaSeleccionada}
+            onChange={(e) => seleccionarFecha(e.target.value)}
+            className="
+            cursor-grab active:cursor-grabbing
+        rounded-2xl border border-slate-200
+        bg-white px-4 py-3
+        text-slate-700 shadow-md
+        outline-none
+
+        transition-all duration-200
+
+        focus:border-teal-300
+        focus:ring-4 focus:ring-teal-100
+      "
+          />
+        </div>
       </div>
 
       <div
-        className="dias mb-4 rounded-3xl border border-slate-200 bg-white/80 p-3 shadow-sm backdrop-blur-sm"
-        onTouchStart={(e) => {
-          setInicioX(e.touches[0].clientX);
-        }}
-        onTouchEnd={(e) => {
-          const finX = e.changedTouches[0].clientX;
+        ref={diasRef}
+        className="
+    dias mb-4 flex gap-3 overflow-x-auto
+    rounded-3xl border border-slate-200
+    bg-white/80 p-3 shadow-sm backdrop-blur-sm
 
-          if (inicioX - finX > 50) {
-            siguienteDia();
-          }
+    snap-x snap-mandatory
+    scroll-smooth
 
-          if (finX - inicioX > 50) {
-            diaAnterior();
-          }
-        }}
-        onMouseDown={(e) => {
-          setInicioX(e.clientX);
-        }}
-        onMouseUp={(e) => {
-          const finX = e.clientX;
-
-          if (inicioX - finX > 50) {
-            siguienteDia();
-          }
-
-          if (finX - inicioX > 50) {
-            diaAnterior();
-          }
-        }}
+    [scrollbar-width:none]
+    [-ms-overflow-style:none]
+    [&::-webkit-scrollbar]:hidden
+  "
+        onMouseDown={iniciarArrastre}
+        onMouseMove={moverArrastre}
+        onMouseUp={terminarArrastre}
+        onMouseLeave={terminarArrastre}
+        onTouchStart
+        onTouchEnd
       >
-        {diasVisibles.map((fecha) => {
+        {diasMes.map((fecha) => {
           const fechaTexto = formatearFecha(fecha);
           const tieneTareas = tareas.some(
             (tarea) => tarea.fecha === fechaTexto,
@@ -336,10 +433,11 @@ function App() {
 
           return (
             <button
+              draggable={false}
               key={fechaTexto}
-              className={`flex min-w-[64px] flex-col items-center rounded-2xl px-3 py-2 transition-all duration-200 ${
+              className={`dia-item shrink-0 snap-center flex min-w-[64px] flex-col items-center rounded-2xl px-3 py-2 transition-all duration-200 ${
                 fechaTexto === fechaSeleccionada
-                  ? "scale-105 bg-teal-200 shadow-sm"
+                  ? "dia-activo scale-105 bg-teal-200 shadow-sm"
                   : "bg-slate-50 hover:-translate-y-1 hover:bg-slate-100"
               }`}
               onClick={() => setFechaSeleccionada(fechaTexto)}
@@ -353,110 +451,185 @@ function App() {
       </div>
       <div className="zona-scroll">
         <ul>
-          {tareasDelDia.map((tarea, index) => (
-            <li
-              key={tarea.id}
-              className={`tarea flex items-center gap-3 rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${
-                draggedIndex === index ? "dragging" : ""
-              } ${dragOverIndex === index ? "drag-over" : ""}`}
-              draggable
-              onDragStart={(e) => {
-                setDraggedIndex(index);
-                try {
-                  e.dataTransfer.setData("text/plain", String(tarea.id));
-                } catch (err) {}
-                e.dataTransfer.effectAllowed = "move";
-              }}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = "move";
-                setDragOverIndex(index);
-              }}
-              onDragLeave={() => setDragOverIndex(null)}
-              onDrop={() => moverTarea(index)}
-              onDragEnd={() => {
-                setDraggedIndex(null);
-                setDragOverIndex(null);
-              }}
-            >
-              <span className="check" onClick={() => cambiarEstado(tarea.id)}>
-                <span className={tarea.completada ? "circle done" : "circle"} />
-              </span>
-
-              <div
-                className="contenido-tarea"
-                onClick={() => cambiarEstado(tarea.id)}
+          <AnimatePresence mode="popLayout">
+            {tareasDelDia.map((tarea, index) => (
+              <motion.li
+                key={tarea.id}
+                layout
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -50, scale: 0.9 }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeOut",
+                }}
+                className={`tarea ${draggedIndex === index ? "dragging" : ""} ${
+                  dragOverIndex === index ? "drag-over" : ""
+                }`}
+                draggable
+                onDragStart={(e) => {
+                  setDraggedIndex(index);
+                  e.dataTransfer.effectAllowed = "move";
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  setDragOverIndex(index);
+                }}
+                onDragLeave={() => setDragOverIndex(null)}
+                onDrop={() => moverTarea(index)}
+                onDragEnd={() => {
+                  setDraggedIndex(null);
+                  setDragOverIndex(null);
+                }}
               >
-                <span
-                  className={`text-base font-medium ${
-                    tarea.completada
-                      ? "text-slate-400 line-through"
-                      : "text-slate-700"
-                  }`}
+                <span className="check" onClick={() => cambiarEstado(tarea.id)}>
+                  <span
+                    className={tarea.completada ? "circle done" : "circle"}
+                  />
+                </span>
+
+                <div
+                  className="contenido-tarea"
+                  onClick={() => cambiarEstado(tarea.id)}
                 >
-                  {tarea.texto}
-                </span>
-
-                <span className="mt-1 text-xs text-slate-400">
-                  Creada: {tarea.fechaCreacion || "Desconocida"}
-                </span>
-
-                {tarea.fechaLimite && (
-                  <span className="mt-1 text-xs font-medium text-cyan-600">
-                    📅 {new Date(tarea.fechaLimite).toLocaleDateString("es-ES")}
+                  <span
+                    className={`text-base font-medium ${
+                      tarea.completada
+                        ? "text-slate-400 line-through"
+                        : "text-slate-700"
+                    }`}
+                  >
+                    {tarea.texto}
                   </span>
-                )}
-              </div>
 
-              <button onClick={() => editarTarea(tarea.id)}>✏️</button>
-              <button onClick={() => borrarTarea(tarea.id)}>🗑</button>
-            </li>
-          ))}
+                  <span className="mt-1 text-xs text-slate-400">
+                    Creada: {tarea.fechaCreacion || "Desconocida"}
+                  </span>
+
+                  {tarea.fechaLimite && (
+                    <span className="mt-1 text-xs font-medium text-cyan-600">
+                      <CalendarDays size={14} />
+                      {new Date(tarea.fechaLimite).toLocaleDateString("es-ES")}
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => editarTarea(tarea.id)}
+                  className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-teal-500"
+                >
+                  <Pencil size={18} />
+                </button>
+                <button
+                  onClick={() => borrarTarea(tarea.id)}
+                  className="rounded-xl p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-500"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </motion.li>
+            ))}
+          </AnimatePresence>
         </ul>
       </div>
-      <button
-        className="boton-flotante fixed bottom-6 left-1/2 z-50 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-full bg-teal-300 text-4xl text-white shadow-xl transition-all duration-200 hover:scale-110 hover:bg-teal-400"
+      <motion.button
+        className="boton-flotante fixed bottom-6 left-1/2 z-50 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-full bg-teal-300 text-4xl text-white shadow-xl"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
         onClick={() => setMostrarFormulario(true)}
       >
-        +
-      </button>
+        <Plus size={32} strokeWidth={2.5} />
+      </motion.button>
 
       {mostrarFormulario && (
-        <div className="modal" onClick={() => setMostrarFormulario(false)}>
+        <div
+          className="modal fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm px-4"
+          onClick={() => setMostrarFormulario(false)}
+        >
           <div
-            className="modal-contenido w-[90%] max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl"
+            className="
+    animar-modal
+    flex flex-col gap-6
+    w-full max-w-md
+    rounded-3xl
+    border border-slate-200/80
+    bg-white
+    p-6
+    shadow-[0_20px_60px_rgba(15,23,42,0.15)]
+  "
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-center text-xl font-semibold text-slate-700">
+            <h3 className="mb-6 text-center text-xl font-semibold text-slate-700">
               Nueva tarea
             </h3>
 
-            <input
-              type="text"
-              placeholder="Escribe una tarea"
-              value={texto}
-              onChange={(e) => setTexto(e.target.value)}
-            />
+            <div className="flex flex-col gap-4">
+              <input
+                type="text"
+                placeholder="Escribe una tarea"
+                value={texto}
+                onChange={(e) => setTexto(e.target.value)}
+                className="
+          w-full rounded-2xl border border-slate-200
+          bg-slate-50 px-4 py-3
+          text-slate-700 placeholder:text-slate-400
+          outline-none transition-all duration-200
+          focus:border-teal-300 focus:bg-white
+          focus:ring-4 focus:ring-teal-100
+        "
+              />
 
-            <input
-              type="date"
-              min={formatearFecha(new Date())}
-              value={fechaLimite}
-              onChange={(e) => setFechaLimite(e.target.value)}
-            />
+              <input
+                type="date"
+                min={formatearFecha(new Date())}
+                value={fechaLimite}
+                onChange={(e) => setFechaLimite(e.target.value)}
+                className="
+          w-full rounded-2xl border border-slate-200
+          bg-slate-50 px-4 py-3
+          text-slate-600
+          outline-none transition-all duration-200
+          focus:border-sky-300 focus:bg-white
+          focus:ring-4 focus:ring-sky-100
+        "
+              />
+            </div>
 
-            <div className="modal-botones">
+            <div className="mt-2 flex justify-end gap-4">
               <button
                 onClick={() => {
                   setTexto("");
                   setFechaLimite("");
                   setMostrarFormulario(false);
                 }}
+                className="
+          rounded-2xl bg-slate-100 px-5 py-3
+          font-medium text-slate-600
+          transition-all duration-200
+          hover:bg-slate-200
+          active:scale-95
+        "
               >
                 Cancelar
               </button>
 
-              <button onClick={agregarTarea}>Guardar</button>
+              <button
+                onClick={agregarTarea}
+                className="
+          rounded-2xl bg-gradient-to-r
+          from-teal-300 to-sky-300
+          px-5 py-3
+          font-medium text-slate-700
+          shadow-lg shadow-teal-200/50
+          transition-all duration-200
+          hover:scale-105 hover:shadow-xl
+          active:scale-95
+        "
+              >
+                Guardar
+              </button>
             </div>
           </div>
         </div>

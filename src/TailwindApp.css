@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
 :root {
     --color-fondo: #f4f7f8;
     --color-superficie: #ffffff;
@@ -11,6 +13,41 @@
 
     --sombra-suave: 0 8px 20px rgba(15, 23, 42, 0.08);
 
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+h1,
+h2,
+h3,
+.titulo-mes {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.titulo-mes {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.texto {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.fecha-creacion,
+.fecha-limite {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-texto-secundario);
 }
 
 body {
@@ -40,6 +77,19 @@ h1 {
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
+
+    will-change: transform;
+
+}
+
+.tarea.dragging {
+    opacity: 0.5;
+    transform: rotate(1deg);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+}
+
+.tarea.drag-over {
+    transform: scale(1.02);
 }
 
 .tarea:hover {
@@ -55,26 +105,62 @@ h1 {
 }
 
 .boton-flotante {
-    position: fixed;
-    left: 50%;
-    bottom: 24px;
-
-    transform: translateX(-50%);
-
-    width: 70px;
-    height: 70px;
-
-    border-radius: 999px;
-
-    background: var(--color-primario);
-
-    box-shadow: var(--sombra-suave);
-
-    transition: all 0.2s ease;
-
-    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .boton-flotante:hover {
     transform: translateX(-50%) scale(1.08);
+}
+
+
+/* Firefox */
+.zona-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #9fd8cb #edf2f4;
+    max-height: calc(100vh - 260px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+}
+
+/* Chrome, Edge y Safari */
+.zona-scroll::-webkit-scrollbar {
+    width: 10px;
+}
+
+.zona-scroll::-webkit-scrollbar-track {
+    background: #edf2f4;
+    border-radius: 999px;
+}
+
+.zona-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom,
+            #9fd8cb,
+            #b8e3ea);
+    border-radius: 999px;
+    border: 2px solid #edf2f4;
+}
+
+.zona-scroll::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom,
+            #8ccfc0,
+            #9fd8e0);
+}
+
+@keyframes modalEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.animar-modal {
+    animation: modalEntrada 0.25s ease;
 }
