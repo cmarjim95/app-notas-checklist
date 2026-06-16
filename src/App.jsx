@@ -272,7 +272,7 @@ function App() {
   // ---------------------------------------------------
   return (
     <main>
-      <h1>Mis tareas</h1>
+      <h1 className="text-4xl font-bold text-teal-500">Mis tareas</h1>
 
       <div className="cabecera-mes">
         <button onClick={mesAnterior}>◀</button>
