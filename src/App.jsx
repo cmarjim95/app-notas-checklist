@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+import "./TailwindApp.css";
 
 function App() {
   // ---------------------------------------------------
@@ -271,21 +272,33 @@ function App() {
   // Render
   // ---------------------------------------------------
   return (
-    <main>
-      <h1 className="text-4xl font-bold text-teal-500">Mis tareas</h1>
+    <main className="mx-auto flex h-screen max-w-2xl flex-col px-5 py-6">
+      <h1 className="mb-6 text-center text-3xl font-bold tracking-tight text-slate-700">
+        Mis tareas
+      </h1>
 
-      <div className="cabecera-mes">
-        <button onClick={mesAnterior}>◀</button>
+      <div className="cabecera-mes mb-4 rounded-3xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur-sm">
+        <button
+          className="rounded-full bg-teal-200 px-4 py-2 text-slate-700 transition hover:scale-105 hover:bg-teal-300"
+          onClick={mesAnterior}
+        >
+          ◀
+        </button>
 
-        <h2 className="titulo-mes">
+        <h2 className="titulo-mes text-xl font-semibold text-slate-700">
           {meses[mes]} {año}
         </h2>
 
-        <button onClick={mesSiguiente}>▶</button>
+        <button
+          className="rounded-full bg-teal-200 px-4 py-2 text-slate-700 transition hover:scale-105 hover:bg-teal-300"
+          onClick={mesSiguiente}
+        >
+          ▶
+        </button>
       </div>
 
       <div
-        className="dias"
+        className="dias mb-4 rounded-3xl border border-slate-200 bg-white/80 p-3 shadow-sm backdrop-blur-sm"
         onTouchStart={(e) => {
           setInicioX(e.touches[0].clientX);
         }}
@@ -324,7 +337,11 @@ function App() {
           return (
             <button
               key={fechaTexto}
-              className={fechaTexto === fechaSeleccionada ? "dia-activo" : ""}
+              className={`flex min-w-[64px] flex-col items-center rounded-2xl px-3 py-2 transition-all duration-200 ${
+                fechaTexto === fechaSeleccionada
+                  ? "scale-105 bg-teal-200 shadow-sm"
+                  : "bg-slate-50 hover:-translate-y-1 hover:bg-slate-100"
+              }`}
               onClick={() => setFechaSeleccionada(fechaTexto)}
             >
               <span className="dia-semana">{diasSemana[fecha.getDay()]}</span>
@@ -339,7 +356,9 @@ function App() {
           {tareasDelDia.map((tarea, index) => (
             <li
               key={tarea.id}
-              className={`tarea ${tarea.completada ? "completada" : ""} ${draggedIndex === index ? "dragging" : ""} ${dragOverIndex === index ? "drag-over" : ""}`}
+              className={`tarea flex items-center gap-3 rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${
+                draggedIndex === index ? "dragging" : ""
+              } ${dragOverIndex === index ? "drag-over" : ""}`}
               draggable
               onDragStart={(e) => {
                 setDraggedIndex(index);
@@ -368,16 +387,22 @@ function App() {
                 className="contenido-tarea"
                 onClick={() => cambiarEstado(tarea.id)}
               >
-                <span className={tarea.completada ? "texto done" : "texto"}>
+                <span
+                  className={`text-base font-medium ${
+                    tarea.completada
+                      ? "text-slate-400 line-through"
+                      : "text-slate-700"
+                  }`}
+                >
                   {tarea.texto}
                 </span>
 
-                <span className="fecha-creacion">
+                <span className="mt-1 text-xs text-slate-400">
                   Creada: {tarea.fechaCreacion || "Desconocida"}
                 </span>
 
                 {tarea.fechaLimite && (
-                  <span className="fecha-limite">
+                  <span className="mt-1 text-xs font-medium text-cyan-600">
                     📅 {new Date(tarea.fechaLimite).toLocaleDateString("es-ES")}
                   </span>
                 )}
@@ -390,7 +415,7 @@ function App() {
         </ul>
       </div>
       <button
-        className="boton-flotante"
+        className="boton-flotante fixed bottom-6 left-1/2 z-50 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-full bg-teal-300 text-4xl text-white shadow-xl transition-all duration-200 hover:scale-110 hover:bg-teal-400"
         onClick={() => setMostrarFormulario(true)}
       >
         +
@@ -398,8 +423,13 @@ function App() {
 
       {mostrarFormulario && (
         <div className="modal" onClick={() => setMostrarFormulario(false)}>
-          <div className="modal-contenido" onClick={(e) => e.stopPropagation()}>
-            <h3>Nueva tarea</h3>
+          <div
+            className="modal-contenido w-[90%] max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-center text-xl font-semibold text-slate-700">
+              Nueva tarea
+            </h3>
 
             <input
               type="text"
