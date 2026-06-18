@@ -292,7 +292,9 @@ function App() {
 
     setIsDraggingDias(true);
 
-    setStartX(e.pageX - diasRef.current.offsetLeft);
+    const clientX = e.touches ? e.touches[0].pageX : e.pageX;
+
+    setStartX(clientX - diasRef.current.offsetLeft);
     setScrollLeft(diasRef.current.scrollLeft);
   }
 
@@ -301,7 +303,9 @@ function App() {
 
     e.preventDefault();
 
-    const x = e.pageX - diasRef.current.offsetLeft;
+    const clientX = e.touches ? e.touches[0].pageX : e.pageX;
+
+    const x = clientX - diasRef.current.offsetLeft;
     const distancia = (x - startX) * 1.5;
 
     diasRef.current.scrollLeft = scrollLeft - distancia;
@@ -407,13 +411,10 @@ function App() {
       <div
         ref={diasRef}
         className="
-    dias mb-4 flex gap-3 overflow-x-auto
+    mb-4 flex justify-start gap-3 overflow-x-auto
     rounded-3xl border border-slate-200
     bg-white/80 p-3 shadow-sm backdrop-blur-sm
-
-    snap-x snap-mandatory
-    scroll-smooth
-
+    snap-x snap-mandatory scroll-smooth
     [scrollbar-width:none]
     [-ms-overflow-style:none]
     [&::-webkit-scrollbar]:hidden
@@ -422,32 +423,38 @@ function App() {
         onMouseMove={moverArrastre}
         onMouseUp={terminarArrastre}
         onMouseLeave={terminarArrastre}
-        onTouchStart
-        onTouchEnd
+        onTouchStart={iniciarArrastre}
+        onTouchMove={moverArrastre}
+        onTouchEnd={terminarArrastre}
       >
+        <div className="shrink-0 w-[calc(50%-32px)]" />
         {diasMes.map((fecha) => {
           const fechaTexto = formatearFecha(fecha);
+
           const tieneTareas = tareas.some(
             (tarea) => tarea.fecha === fechaTexto,
           );
 
           return (
             <button
-              draggable={false}
               key={fechaTexto}
+              draggable={false}
               className={`dia-item shrink-0 snap-center flex min-w-[64px] flex-col items-center rounded-2xl px-3 py-2 transition-all duration-200 ${
                 fechaTexto === fechaSeleccionada
                   ? "dia-activo scale-105 bg-teal-200 shadow-sm"
                   : "bg-slate-50 hover:-translate-y-1 hover:bg-slate-100"
               }`}
-              onClick={() => setFechaSeleccionada(fechaTexto)}
+              onClick={() => seleccionarFecha(fechaTexto)}
             >
               <span className="dia-semana">{diasSemana[fecha.getDay()]}</span>
+
               <span className="dia-numero">{fecha.getDate()}</span>
+
               {tieneTareas && <span className="indicador-dia"></span>}
             </button>
           );
         })}
+        <div className="shrink-0 w-[calc(50%-32px)]" />
       </div>
       <div className="zona-scroll">
         <ul>
